@@ -2,13 +2,14 @@
 
 A full-stack scheduling/booking web application that replicates Calendly's design and user experience. Built with React.js, FastAPI, and MySQL.
 
-![Schedulr Screenshot](https://via.placeholder.com/800x400?text=Schedulr+Preview)
+### Schedulr Screenshot
+![Screenshot](<Screenshot 2026-03-28 123218.png>)
 
 ## 🔗 Links
 
-- **Frontend (Netlify):** https://schedulr-app.netlify.app
-- **Backend API (Railway):** https://schedulr-api.railway.app
-- **API Docs:** https://schedulr-api.railway.app/docs
+- **Frontend (Netlify):** https://schedulr-c.netlify.app
+- **Backend API (Railway):** https://schedulr-production-af52.up.railway.app
+- **API Docs:** https://https://schedulr-production-af52.up.railway.app/docs
 
 ---
 
