@@ -14,8 +14,67 @@ import pytz
 router = APIRouter()
 
 
+# def _check_slot_available(db: Session, user_id: int, event_type: EventType, start_time: datetime) -> bool:
+#     """Verify no double booking. Accounts for buffer times."""
+#     buffer_before = timedelta(minutes=event_type.buffer_before_minutes)
+#     buffer_after = timedelta(minutes=event_type.buffer_after_minutes)
+#     end_time = start_time + timedelta(minutes=event_type.duration_minutes)
+
+#     effective_start = start_time - buffer_before
+#     effective_end = end_time + buffer_after
+
+#     # Find any conflicting meetings
+#     conflict = (
+#         db.query(Meeting)
+#         .join(EventType)
+#         .filter(
+#             Meeting.host_id == user_id,
+#             Meeting.status.in_([MeetingStatus.SCHEDULED, MeetingStatus.RESCHEDULED]),
+#         )
+#         .all()
+#     )
+
+#     for m in conflict:
+#         m_buffer_before = timedelta(minutes=m.event_type.buffer_before_minutes)
+#         m_buffer_after = timedelta(minutes=m.event_type.buffer_after_minutes)
+#         # m_effective_start = m.start_time - m_buffer_before
+#         # m_effective_end = m.end_time + m_buffer_after
+
+#         from datetime import timezone
+
+#         # normalize DB times to UTC-aware
+#         m_start = m.start_time
+#         m_end = m.end_time
+
+#         if m_start.tzinfo is None:
+#         m_start = m_start.replace(tzinfo=timezone.utc)
+
+#         if m_end.tzinfo is None:
+#         m_end = m_end.replace(tzinfo=timezone.utc)
+
+#         m_effective_start = m_start - m_buffer_before
+#         m_effective_end = m_end + m_buffer_after
+
+#         if effective_start < m_effective_end and effective_end > m_effective_start:
+#             return False
+#     return True
+
+
+from datetime import timezone
+
+def _to_utc(dt):
+    """Ensure datetime is timezone-aware UTC."""
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
 def _check_slot_available(db: Session, user_id: int, event_type: EventType, start_time: datetime) -> bool:
-    """Verify no double booking. Accounts for buffer times."""
+    """Verify no double booking. Accounts for buffer times. Handles timezone safely."""
+
+    # Normalize incoming time
+    start_time = _to_utc(start_time)
+
     buffer_before = timedelta(minutes=event_type.buffer_before_minutes)
     buffer_after = timedelta(minutes=event_type.buffer_after_minutes)
     end_time = start_time + timedelta(minutes=event_type.duration_minutes)
@@ -23,8 +82,8 @@ def _check_slot_available(db: Session, user_id: int, event_type: EventType, star
     effective_start = start_time - buffer_before
     effective_end = end_time + buffer_after
 
-    # Find any conflicting meetings
-    conflict = (
+    # Fetch existing meetings
+    meetings = (
         db.query(Meeting)
         .join(EventType)
         .filter(
@@ -34,14 +93,21 @@ def _check_slot_available(db: Session, user_id: int, event_type: EventType, star
         .all()
     )
 
-    for m in conflict:
+    for m in meetings:
+        # Normalize DB times (CRITICAL FIX)
+        m_start = _to_utc(m.start_time)
+        m_end = _to_utc(m.end_time)
+
         m_buffer_before = timedelta(minutes=m.event_type.buffer_before_minutes)
         m_buffer_after = timedelta(minutes=m.event_type.buffer_after_minutes)
-        m_effective_start = m.start_time - m_buffer_before
-        m_effective_end = m.end_time + m_buffer_after
 
+        m_effective_start = m_start - m_buffer_before
+        m_effective_end = m_end + m_buffer_after
+
+        # Overlap check
         if effective_start < m_effective_end and effective_end > m_effective_start:
             return False
+
     return True
 
 
