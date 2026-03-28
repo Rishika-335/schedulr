@@ -15,7 +15,6 @@ router = APIRouter()
 
 
 def _check_slot_available(db: Session, user_id: int, event_type: EventType, start_time: datetime) -> bool:
-    """Verify no double booking. Accounts for buffer times."""
     buffer_before = timedelta(minutes=event_type.buffer_before_minutes)
     buffer_after = timedelta(minutes=event_type.buffer_after_minutes)
     end_time = start_time + timedelta(minutes=event_type.duration_minutes)
@@ -23,7 +22,6 @@ def _check_slot_available(db: Session, user_id: int, event_type: EventType, star
     effective_start = start_time - buffer_before
     effective_end = end_time + buffer_after
 
-    # Find any conflicting meetings
     conflict = (
         db.query(Meeting)
         .join(EventType)
@@ -37,8 +35,11 @@ def _check_slot_available(db: Session, user_id: int, event_type: EventType, star
     for m in conflict:
         m_buffer_before = timedelta(minutes=m.event_type.buffer_before_minutes)
         m_buffer_after = timedelta(minutes=m.event_type.buffer_after_minutes)
-        m_effective_start = m.start_time - m_buffer_before
-        m_effective_end = m.end_time + m_buffer_after
+        # Make both timezone-aware
+        m_start = m.start_time if m.start_time.tzinfo else m.start_time.replace(tzinfo=timezone.utc)
+        m_end = m.end_time if m.end_time.tzinfo else m.end_time.replace(tzinfo=timezone.utc)
+        m_effective_start = m_start - m_buffer_before
+        m_effective_end = m_end + m_buffer_after
 
         if effective_start < m_effective_end and effective_end > m_effective_start:
             return False
