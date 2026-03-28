@@ -15,9 +15,8 @@ class Settings(BaseSettings):
     # CORS
     ALLOWED_ORIGINS: List[str] = [
         "http://localhost:5173",
-        "http://localhost:3000",
-        "https://schedulr-app.netlify.app",
-        "https://*.netlify.app",
+        "https://schedulr-c.netlify.app",
+        "*",
     ]
 
     # Email (SMTP)
