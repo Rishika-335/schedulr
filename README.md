@@ -9,7 +9,7 @@ A full-stack scheduling/booking web application that replicates Calendly's desig
 
 - **Frontend (Netlify):** https://schedulr-c.netlify.app
 - **Backend API (Railway):** https://schedulr-production-af52.up.railway.app
-- **API Docs:** https://https://schedulr-production-af52.up.railway.app/docs
+- **API Docs:** https://schedulr-production-af52.up.railway.app/docs
 
 ---
 
