@@ -52,7 +52,7 @@ def health():
     return {"status": "healthy"}
 
 
-
+from fastapi import Depends
 from app.core.security import verify_api_key
 
 # Protected admin routes
