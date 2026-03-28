@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     SMTP_FROM: str = "noreply@schedulr.app"
     EMAIL_ENABLED: bool = False
 
+    # Security
+    API_KEY: str = ""
+
     # App URL
     APP_URL: str = "http://localhost:5173"
 
