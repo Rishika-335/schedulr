@@ -168,6 +168,7 @@ function MeetingRow({ meeting: m, onCancel, onClick }) {
     <div
       className="card px-5 py-4 flex items-center gap-4 hover:shadow-md transition-all cursor-pointer"
       onClick={onClick}
+      style={{ cursor: 'pointer' }}
     >
       {/* Color dot */}
       <div
