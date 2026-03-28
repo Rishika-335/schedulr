@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "Schedulr"
     DEBUG: bool = False
     SECRET_KEY: str = "super-secret-key-change-in-production"
+    API_KEY: str = "schedulr-admin-secret-2024"
 
     # Database
     DATABASE_URL: str = "mysql+pymysql://user:password@localhost:3306/schedulr"

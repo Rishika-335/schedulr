@@ -50,3 +50,16 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "healthy"}
+
+
+
+from app.core.security import verify_api_key
+
+# Protected admin routes
+app.include_router(event_types.router, prefix="/api/v1/event-types", tags=["event-types"], dependencies=[Depends(verify_api_key)])
+app.include_router(availability.router, prefix="/api/v1/availability", tags=["availability"], dependencies=[Depends(verify_api_key)])
+app.include_router(meetings.router, prefix="/api/v1/meetings", tags=["meetings"], dependencies=[Depends(verify_api_key)])
+
+# Public routes (no key needed)
+app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
+app.include_router(bookings.router, prefix="/api/v1/bookings", tags=["bookings"])

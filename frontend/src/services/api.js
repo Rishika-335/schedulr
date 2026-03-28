@@ -2,10 +2,15 @@ import axios from 'axios'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
+
+
+
 const api = axios.create({
   baseURL: `${API_BASE}/api/v1`,
-  headers: { 'Content-Type': 'application/json' },
-  timeout: 15000,
+  headers: { 
+    'Content-Type': 'application/json',
+    'X-API-Key': import.meta.env.VITE_API_KEY || 'schedulr-admin-secret-2024'
+  },
 })
 
 api.interceptors.response.use(
