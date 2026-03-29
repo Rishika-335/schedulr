@@ -7,6 +7,34 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+# def send_email(to_email: str, subject: str, html_body: str, text_body: str = ""):
+#     """Send an email via SMTP. Gracefully skips if not configured."""
+#     if not settings.EMAIL_ENABLED or not settings.SMTP_USER:
+#         logger.info(f"Email not configured. Would have sent to {to_email}: {subject}")
+#         return False
+
+#     try:
+#         msg = MIMEMultipart("alternative")
+#         msg["Subject"] = subject
+#         msg["From"] = f"Schedulr <{settings.SMTP_FROM}>"
+#         msg["To"] = to_email
+
+#         if text_body:
+#             msg.attach(MIMEText(text_body, "plain"))
+#         msg.attach(MIMEText(html_body, "html"))
+
+#         with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
+#             server.starttls()
+#             server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+#             server.sendmail(settings.SMTP_FROM, to_email, msg.as_string())
+
+#         logger.info(f"✅ Email sent to {to_email}: {subject}")
+#         return True
+#     except Exception as e:
+#         logger.error(f"❌ Email failed: {e}")
+#         return False
+
 def send_email(to_email: str, subject: str, html_body: str, text_body: str = ""):
     """Send an email via SMTP. Gracefully skips if not configured."""
     if not settings.EMAIL_ENABLED or not settings.SMTP_USER:
