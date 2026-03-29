@@ -11,6 +11,12 @@ from datetime import datetime, timedelta, timezone
 import secrets
 import pytz
 
+import threading
+
+def send_emails_async(func, *args):
+    thread = threading.Thread(target=func, args=args, daemon=True)
+    thread.start()
+
 router = APIRouter()
 
 
@@ -75,10 +81,7 @@ def cancel_booking_by_token(
     db.commit()
     db.refresh(meeting)
 
-    try:
-        email_service.send_cancellation_email(meeting, meeting.event_type, meeting.host)
-    except Exception:
-        pass
+    send_emails_async(email_service.send_cancellation_email, meeting, meeting.event_type, meeting.host)
 
     return {"message": "Meeting cancelled successfully"}
 
@@ -202,11 +205,8 @@ def create_booking(
     db.refresh(meeting)
 
     # Send emails (non-blocking — fails silently)
-    try:
-        email_service.send_booking_confirmation_to_invitee(meeting, event_type, user)
-        email_service.send_booking_notification_to_host(meeting, event_type, user)
-    except Exception:
-        pass
+    send_emails_async(email_service.send_booking_confirmation_to_invitee, meeting, event_type, user)
+    send_emails_async(email_service.send_booking_notification_to_host, meeting, event_type, user)
 
     return meeting
 
