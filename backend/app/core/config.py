@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
     SMTP_FROM: str = "noreply@schedulr.app"
-    EMAIL_ENABLED: bool = False
+    EMAIL_ENABLED: bool = True
 
     # Security
     API_KEY: str = ""
