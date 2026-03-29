@@ -16,8 +16,16 @@ const api = axios.create({
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    const msg = err.response?.data?.detail || err.message || 'Something went wrong'
-    return Promise.reject(new Error(typeof msg === 'string' ? msg : JSON.stringify(msg)))
+    const data = err.response?.data
+    let msg = 'Something went wrong'
+    if (typeof data?.detail === 'string') {
+      msg = data.detail
+    } else if (Array.isArray(data?.detail)) {
+      msg = data.detail.map(e => e.msg).join(', ')
+    } else if (err.message) {
+      msg = err.message
+    }
+    return Promise.reject(new Error(msg))
   }
 )
 
