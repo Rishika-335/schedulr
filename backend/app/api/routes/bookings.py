@@ -200,6 +200,15 @@ def create_booking(
     db.commit()
     db.refresh(meeting)
 
+    # Eagerly load relationships before background threads touch the session
+    _ = meeting.event_type
+    _ = meeting.host
+
+    # Copy data for emails to avoid session sharing issues
+    meeting_id = meeting.id
+    et_name = event_type.name
+    host_name = user.name
+
     send_emails_async(email_service.send_booking_confirmation_to_invitee, meeting, event_type, user)
     send_emails_async(email_service.send_booking_notification_to_host, meeting, event_type, user)
 
